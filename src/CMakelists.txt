@@ -1,0 +1,46 @@
+#project name
+PROJECT(FXSudokuDecoder)
+
+CMAKE_MINIMUM_REQUIRED(VERSION 3.8)
+
+#head file path
+INCLUDE_DIRECTORIES(
+	.
+)
+
+#lib file path
+LINK_DIRECTORIES(
+)
+
+#source directory
+SET (SRC_LIST
+	fx_cell.cpp
+	fx_cell.h
+	fx_grid.cpp
+	fx_grid.h
+	fx_sudoku.cpp
+	fx_sudoku.h
+	main.cpp
+	stdafx.cpp
+	stdafx.h
+	targetver.h
+)
+
+SET(LIB_SRC_LIST
+)
+
+#MESSAGE("CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
+MESSAGE("------------------------------${CMAKE_BUILD_TYPE}------------------------------")
+IF (CMAKE_BUILD_TYPE MATCHES "Release")
+	SET(CMAKE_CONFIGURATION_TYPES Release;MinSizeRel;RelWithDebInfo)
+ENDIF ()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY FXSudokuDecoder/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG FXSudokuDecoder/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE FXSudokuDecoder/bin)
+
+#add executable file
+ADD_EXECUTABLE(FXSudokuDecoder ${SRC_LIST})
+
+#add link library
+#TARGET_LINK_LIBRARIES(../lib/lib ${LIB_SRC_LIST})
