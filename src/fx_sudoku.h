@@ -19,6 +19,9 @@ public:
 	bool IsFinished();
 	BYTE GetTriedCellIndexCount();
 	BYTE GetUnfinishCount();
+#ifdef _DEBUG
+	bool CheckAllCellNumber();
+#endif // _DEBUG
 
 private:
 	bool CalcMaybeNumber();
@@ -36,7 +39,7 @@ private:
 	void Destroy();
 
 #ifdef _DEBUG
-	bool CheckCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE & number);
+	bool CheckCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE & number = 0);
 #endif // _DEBUG
 
 private:

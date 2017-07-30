@@ -38,6 +38,10 @@ int main()
 
 	if (!sudoku.Decode())
 		std::cout << "no decode!" << std::endl;
+#ifdef _DEBUG
+	else
+		assert(sudoku.CheckAllCellNumber());
+#endif // _DEBUG
 
 	sudoku.Print();
 

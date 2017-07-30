@@ -65,10 +65,17 @@ void FXSudoku::SetCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE & 
 }
 
 #ifdef _DEBUG
-bool FXSudoku::CheckCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE & number)
+bool FXSudoku::CheckCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE & _num)
 {
+	BYTE number = _num;
 	if (number == 0)
-		return true;
+	{
+		FXCell * pCell = GetCell((idxX), (idxY));
+		assert(pCell);
+		if (pCell->HasNumber())
+			return false;
+		number = pCell->GetNumber();
+	}
 
 	bool result = false;
 
@@ -137,15 +144,17 @@ bool FXSudoku::Decode()
 			return false;
 
 		if (IsFinished())
-		{
-			assert(result > 0);
 			return true;
-		}
 
 		bool change = CheckCellMaybeNumberOnlyOne();
 
 		if (result == 0 && !change)
 			break;
+
+#ifdef _DEBUG
+		if (m_main)
+			Print();
+#endif // _DEBUG
 	}
 
 	return TryCellMaybeNumber();
@@ -186,6 +195,20 @@ BYTE FXSudoku::GetUnfinishCount()
 	}
 	return count;
 }
+
+#ifdef _DEBUG
+bool FXSudoku::CheckAllCellNumber()
+{
+	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
+	{
+		for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
+		{
+			CheckCellNumber(i, j);
+		}
+	}
+	return true;
+}
+#endif // _DEBUG
 
 bool FXSudoku::CalcMaybeNumber()
 {
@@ -284,7 +307,8 @@ bool FXSudoku::CheckCellMaybeNumberOnlyOne()
 			GET_CELL_AND_CHECK_CONTINUE(i, j, pCell);
 			pCells.push_back(pCell);
 		}
-		change = CheckCellMaybeNumberOnlyOne(pCells);
+		if (CheckCellMaybeNumberOnlyOne(pCells))
+			change = true;
 	}
 
 	for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
@@ -295,7 +319,8 @@ bool FXSudoku::CheckCellMaybeNumberOnlyOne()
 			GET_CELL_AND_CHECK_CONTINUE(i, j, pCell);
 			pCells.push_back(pCell);
 		}
-		change = CheckCellMaybeNumberOnlyOne(pCells);
+		if (CheckCellMaybeNumberOnlyOne(pCells))
+			change = true;
 	}
 
 	for (BYTE i = 0; i < MAX_GRID_COUNT; ++i)
@@ -307,7 +332,8 @@ bool FXSudoku::CheckCellMaybeNumberOnlyOne()
 
 			std::vector<FXCell*> pCells;
 			pGrid->GetAllNoNumCells(pCells);
-			change = CheckCellMaybeNumberOnlyOne(pCells);
+			if (CheckCellMaybeNumberOnlyOne(pCells))
+				change = true;
 		}
 	}
 
@@ -334,7 +360,7 @@ bool FXSudoku::CheckCellMaybeNumberOnlyOne(const std::vector<FXCell*> & pCells)
 	BYTE num = 0;
 	for (BYTE i = 0; i < MAX_NUMBER; ++i)
 	{
-		if (maybeNumberCounts[num] == 1)
+		if (maybeNumberCounts[i] == 1)
 		{
 			num = i + 1;
 			for (BYTE j = 0; j < cellCount; ++j)
