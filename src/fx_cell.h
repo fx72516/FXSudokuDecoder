@@ -12,7 +12,7 @@ public:
 	bool SetOutNumbers(std::unordered_set<BYTE> & outNumSet);
 	BYTE MaybeNumberCount();
 	BYTE CheckMaybeNumber();
-	void RemoveMaybeNumber(const BYTE & number);
+	bool RemoveMaybeNumber(const BYTE & number);
 	std::unordered_set<BYTE> * GetMaybeNumbers();
 	BYTE GetIndexX();
 	BYTE GetIndexY();

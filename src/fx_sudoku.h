@@ -30,7 +30,7 @@ private:
 	bool CheckCellMaybeNumberOnlyOne();
 	bool CheckCellMaybeNumberOnlyOne(const std::vector<FXCell*> & pCells);
 	FXCell * GetBestMaybeNumberCell(BYTE * idxX, BYTE * idxY);
-	void RemoveCellMaybeNumbers(const BYTE & idxX, const BYTE & idxY, const BYTE & number);
+	bool RemoveCellMaybeNumbers(const BYTE & idxX, const BYTE & idxY, const BYTE & number);
 	bool GetCellOutNumber(const BYTE & idxX, const BYTE & idxY, std::unordered_set<BYTE> & outNumSet);
 	void AddTriedCellIndex(const BYTE & idxX, const BYTE & idxY);
 	bool IsCellTried(const BYTE & idxX, const BYTE & idxY);

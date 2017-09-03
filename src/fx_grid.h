@@ -10,7 +10,7 @@ public:
 	~FXGrid();
 	FXCell * GetCell(const BYTE & idxX, const BYTE & idxY);
 	bool GetOutNumbers(std::unordered_set<BYTE> & outNumSet);
-	void RemoveCellMaybeNumbers(const BYTE & number);
+	bool RemoveCellMaybeNumbers(const BYTE & number);
 	BYTE CheckCellMaybeNumberOnlyOne(BYTE * idxX, BYTE * idxY);
 	void GetAllNoNumCells(std::vector<FXCell*> & pCells);
 	BYTE GetIndexX();

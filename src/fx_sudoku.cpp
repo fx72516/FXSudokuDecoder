@@ -72,7 +72,7 @@ bool FXSudoku::CheckCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE 
 	{
 		FXCell * pCell = GetCell((idxX), (idxY));
 		assert(pCell);
-		if (pCell->HasNumber())
+		if (!pCell->HasNumber())
 			return false;
 		number = pCell->GetNumber();
 	}
@@ -110,7 +110,9 @@ BYTE FXSudoku::GetCellNumber(const BYTE & idxX, const BYTE & idxY)
 
 void FXSudoku::Print()
 {
+#ifdef _DEBUG
 	Print(std::cout);
+#endif
 }
 
 void FXSudoku::Print(std::ostream & os)
@@ -203,7 +205,8 @@ bool FXSudoku::CheckAllCellNumber()
 	{
 		for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
 		{
-			CheckCellNumber(i, j);
+			if (!CheckCellNumber(i, j))
+				return false;
 		}
 	}
 	return true;
@@ -284,7 +287,8 @@ BYTE FXSudoku::CheckCellMaybeNumber()
 			if (number > 0)
 			{
 				++change;
-				RemoveCellMaybeNumbers(i, j, number);
+				if (RemoveCellMaybeNumbers(i, j, number))
+					return -1;
 			}
 			else if (number < 0)
 			{
@@ -375,7 +379,8 @@ bool FXSudoku::CheckCellMaybeNumberOnlyOne(const std::vector<FXCell*> & pCells)
 				{
 					change = true;
 					pCell->SetNumber(num);
-					RemoveCellMaybeNumbers(pCell->GetIndexX(), pCell->GetIndexY(), num);
+					if (RemoveCellMaybeNumbers(pCell->GetIndexX(), pCell->GetIndexY(), num))
+						return false;
 				}
 			}
 			assert(change);
@@ -415,22 +420,27 @@ FXCell * FXSudoku::GetBestMaybeNumberCell(BYTE * idxX, BYTE * idxY)
 	return pBestCell;
 }
 
-void FXSudoku::RemoveCellMaybeNumbers(const BYTE & idxX, const BYTE & idxY, const BYTE & number)
+bool FXSudoku::RemoveCellMaybeNumbers(const BYTE & idxX, const BYTE & idxY, const BYTE & number)
 {
 	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
 	{
 		GET_CELL_AND_CHECK_CONTINUE(i, idxY, pCell);
-		pCell->RemoveMaybeNumber(number);
+		if (pCell->RemoveMaybeNumber(number))
+			return true;
 	}
 
 	for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
 	{
 		GET_CELL_AND_CHECK_CONTINUE(idxX, j, pCell);
-		pCell->RemoveMaybeNumber(number);
+		if (pCell->RemoveMaybeNumber(number))
+			return true;
 	}
 
 	GET_GRID_BY_CELL_INDEX_AND_ASSERT(idxX, idxY, pGrid);
-	pGrid->RemoveCellMaybeNumbers(number);
+	if (pGrid->RemoveCellMaybeNumbers(number))
+		return true;
+
+	return false;
 }
 
 bool FXSudoku::GetCellOutNumber(const BYTE & idxX, const BYTE & idxY, std::unordered_set<BYTE> & outNumSet)

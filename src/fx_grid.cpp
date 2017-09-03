@@ -51,16 +51,18 @@ bool FXGrid::GetOutNumbers(std::unordered_set<BYTE>& outNumSet)
 	return true;
 }
 
-void FXGrid::RemoveCellMaybeNumbers(const BYTE & number)
+bool FXGrid::RemoveCellMaybeNumbers(const BYTE & number)
 {
 	for (BYTE i = 0; i < MAX_CELL_COUNT; ++i)
 	{
 		for (BYTE j = 0; j < MAX_CELL_COUNT; ++j)
 		{
 			GET_CELL_AND_CHECK_CONTINUE(i, j, pCell);
-			pCell->RemoveMaybeNumber(number);
+			if (pCell->RemoveMaybeNumber(number))
+				return true;
 		}
 	}
+	return false;
 }
 
 BYTE FXGrid::CheckCellMaybeNumberOnlyOne(BYTE * idxX, BYTE * idxY)

@@ -69,9 +69,11 @@ BYTE FXCell::CheckMaybeNumber()
 	return 0;
 }
 
-void FXCell::RemoveMaybeNumber(const BYTE & number)
+bool FXCell::RemoveMaybeNumber(const BYTE & number)
 {
 	m_maybeNumSet.erase(number);
+	
+	return m_maybeNumSet.size() == 0;
 }
 
 std::unordered_set<BYTE> * FXCell::GetMaybeNumbers()
