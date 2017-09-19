@@ -18,8 +18,13 @@ SET (SRC_LIST
 	fx_cell.h
 	fx_grid.cpp
 	fx_grid.h
-	fx_sudoku.cpp
-	fx_sudoku.h
+	fx_sudoku_base.cpp
+	fx_sudoku_base.h
+	fx_sudoku_dlx.cpp
+	fx_sudoku_dlx.h
+	fx_sudoku_fx.cpp
+	fx_sudoku_fx.h
+	fx_sudoku_i.h
 	fx_dancing_links_x.cpp
 	fx_dancing_links_x.h
 	main.cpp

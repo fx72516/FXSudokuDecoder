@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <fstream>
 
 
 
@@ -26,7 +27,9 @@
 #define ASSERT(exp)	0
 #endif
 
-typedef char BYTE;
+#define PURE			= 0
+
+typedef unsigned char BYTE;
 typedef unsigned long ULONG;
 const static ULONG UNUSEFULL = 0xffffffff;
 
@@ -40,5 +43,11 @@ const static BYTE MAX_NUMBER = MAX_CELL_COUNT * MAX_GRID_COUNT;
 	assert(pCell);										\
 	if ((pCell)->HasNumber())							\
 		continue;
+
+#define GET_GRID_BY_CELL_INDEX_AND_ASSERT(idxX, idxY, pGrid)						\
+	FXGrid * (pGrid) = GetGrid((idxX) / MAX_CELL_COUNT, (idxY) / MAX_CELL_COUNT);	\
+	assert(pGrid);
+
+#define CHECK_BOOL_RET(r)	if (!(r))	{ goto FX_EXIT; }
 
 // TODO: 在此处引用程序需要的其他头文件

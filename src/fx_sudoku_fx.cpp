@@ -1,140 +1,19 @@
 #include "stdafx.h"
-#include "fx_sudoku.h"
+#include "fx_sudoku_fx.h"
 #include "fx_grid.h"
 #include "fx_cell.h"
 
-#define GET_GRID_BY_CELL_INDEX_AND_ASSERT(idxX, idxY, pGrid)						\
-	FXGrid * (pGrid) = GetGrid((idxX) / MAX_CELL_COUNT, (idxY) / MAX_CELL_COUNT);	\
-	assert(pGrid);
-
-#define CHECK_NUMBER_RET_FALSE(idxX, idxY, number)				\
-
-
-#define CHECK_BOOL_RET(r)	if (!(r))	{ goto FX_EXIT; }
-
-FXSudoku::FXSudoku(bool main)
-	: m_main(main)
+FXSudokuFX::FXSudokuFX(bool main)
+	: FXSudokuBase(), m_triedCellIndexes(), m_main(main)
 {
-	for (BYTE i = 0; i < MAX_GRID_COUNT; ++i)
-	{
-		for (BYTE j = 0; j < MAX_GRID_COUNT; ++j)
-		{
-			m_grids[i][j] = new FXGrid(i, j);
-		}
-	}
 }
 
-
-FXSudoku::~FXSudoku()
+FXSudokuFX::~FXSudokuFX()
 {
 	m_triedCellIndexes.clear();
-	for (BYTE i = 0; i < MAX_GRID_COUNT; ++i)
-	{
-		for (BYTE j = 0; j < MAX_GRID_COUNT; ++j)
-		{
-			delete m_grids[i][j];
-			m_grids[i][j] = nullptr;
-		}
-	}
 }
 
-FXGrid * FXSudoku::GetGrid(const BYTE & idxX, const BYTE & idxY)
-{
-	if (idxX < 0 || idxX >= MAX_GRID_COUNT || idxY < 0 || idxY >= MAX_GRID_COUNT)
-		return nullptr;
-	return m_grids[idxX][idxY];
-}
-
-FXCell * FXSudoku::GetCell(const BYTE & idxX, const BYTE & idxY)
-{
-	if (idxX < 0 || idxX >= MAX_GRID_COUNT * MAX_CELL_COUNT || idxY < 0 || idxY >= MAX_GRID_COUNT * MAX_CELL_COUNT)
-		return nullptr;
-
-	GET_GRID_BY_CELL_INDEX_AND_ASSERT(idxX, idxY, pGrid);
-	return pGrid->GetCell(idxX % MAX_CELL_COUNT, idxY % MAX_CELL_COUNT);
-}
-
-void FXSudoku::SetCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE & number)
-{
-	FXCell * pCell = GetCell(idxX, idxY);
-	assert(pCell);
-
-	assert(CheckCellNumber(idxX, idxY, number));
-
-	pCell->SetNumber(number);
-}
-
-#ifdef _DEBUG
-bool FXSudoku::CheckCellNumber(const BYTE & idxX, const BYTE & idxY, const BYTE & _num)
-{
-	BYTE number = _num;
-	if (number == 0)
-	{
-		FXCell * pCell = GetCell((idxX), (idxY));
-		assert(pCell);
-		if (!pCell->HasNumber())
-			return false;
-		number = pCell->GetNumber();
-	}
-
-	bool result = false;
-
-	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
-	{
-		if (idxX != i)
-			CHECK_BOOL_RET(GetCellNumber(i, idxY) != number);
-	}
-
-	for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
-	{
-		if (idxY != j)
-			CHECK_BOOL_RET(GetCellNumber(idxX, j) != number);
-	}
-
-	GET_GRID_BY_CELL_INDEX_AND_ASSERT(idxX, idxY, pGrid);
-	result = pGrid->CheckCellNumber(number);
-
-FX_EXIT:
-	if (!result)
-		Print();
-	return result;
-}
-#endif // _DEBUG
-
-BYTE FXSudoku::GetCellNumber(const BYTE & idxX, const BYTE & idxY)
-{
-	FXCell * pCell = GetCell(idxX, idxY);
-	assert(pCell);
-	return pCell->GetNumber();
-}
-
-void FXSudoku::Print()
-{
-#ifdef _DEBUG
-	Print(std::cout);
-#endif
-}
-
-void FXSudoku::Print(std::ostream & os)
-{
-	os << std::endl;
-	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
-	{
-		for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
-		{
-			os << (int)GetCellNumber(i, j) << "  ";
-
-			if ((j + 1) % MAX_CELL_COUNT == 0)
-				os << "  ";
-		}
-		if ((i + 1) % MAX_CELL_COUNT == 0)
-			os << std::endl;
-		os << std::endl;
-	}
-	os << std::endl;
-}
-
-bool FXSudoku::Decode()
+bool FXSudokuFX::Decode()
 {
 	if (!CalcMaybeNumber())
 		return false;
@@ -153,67 +32,19 @@ bool FXSudoku::Decode()
 		if (result == 0 && !change)
 			break;
 
-#ifdef _DEBUG
 		if (m_main)
 			Print();
-#endif // _DEBUG
 	}
 
 	return TryCellMaybeNumber();
 }
 
-bool FXSudoku::IsFinished()
-{
-	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
-	{
-		for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
-		{
-			GET_CELL_AND_CHECK_CONTINUE(i, j, pCell);
-
-			if (!pCell->HasNumber())
-				return false;
-		}
-	}
-	return true;
-}
-
-BYTE FXSudoku::GetTriedCellIndexCount()
+BYTE FXSudokuFX::GetTriedCellIndexCount()
 {
 	return (BYTE)m_triedCellIndexes.size();
 }
 
-BYTE FXSudoku::GetUnfinishCount()
-{
-	BYTE count = 0;
-	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
-	{
-		for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
-		{
-			GET_CELL_AND_CHECK_CONTINUE(i, j, pCell);
-
-			if (!pCell->HasNumber())
-				++count;
-		}
-	}
-	return count;
-}
-
-#ifdef _DEBUG
-bool FXSudoku::CheckAllCellNumber()
-{
-	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
-	{
-		for (BYTE j = 0; j < MAX_GRID_COUNT * MAX_CELL_COUNT; ++j)
-		{
-			if (!CheckCellNumber(i, j))
-				return false;
-		}
-	}
-	return true;
-}
-#endif // _DEBUG
-
-bool FXSudoku::CalcMaybeNumber()
+bool FXSudokuFX::CalcMaybeNumber()
 {
 	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
 	{
@@ -231,7 +62,7 @@ bool FXSudoku::CalcMaybeNumber()
 	return true;
 }
 
-bool FXSudoku::TryCellMaybeNumber()
+bool FXSudokuFX::TryCellMaybeNumber()
 {
 	bool decoded = false;
 	BYTE idxX = 0, idxY = 0;
@@ -240,7 +71,7 @@ bool FXSudoku::TryCellMaybeNumber()
 		std::unordered_set<BYTE> * maybeNumbers = pBestCell->GetMaybeNumbers();
 		auto iter = maybeNumbers->cbegin();
 		do{
-			FXSudoku * pSudoku = Clone();
+			FXSudokuFX * pSudoku = Clone();
 			pSudoku->SetCellNumber(idxX, idxY, *iter);
 
 			if (pSudoku->m_triedCellIndexes.size() < m_triedCellIndexes.size())
@@ -274,7 +105,7 @@ bool FXSudoku::TryCellMaybeNumber()
 	return decoded;
 }
 
-BYTE FXSudoku::CheckCellMaybeNumber()
+BYTE FXSudokuFX::CheckCellMaybeNumber()
 {
 	BYTE change = 0;
 	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
@@ -299,7 +130,7 @@ BYTE FXSudoku::CheckCellMaybeNumber()
 	return change;
 }
 
-bool FXSudoku::CheckCellMaybeNumberOnlyOne()
+bool FXSudokuFX::CheckCellMaybeNumberOnlyOne()
 {
 	bool change = false;
 
@@ -344,7 +175,7 @@ bool FXSudoku::CheckCellMaybeNumberOnlyOne()
 	return change;
 }
 
-bool FXSudoku::CheckCellMaybeNumberOnlyOne(const std::vector<FXCell*> & pCells)
+bool FXSudokuFX::CheckCellMaybeNumberOnlyOne(const std::vector<FXCell*> & pCells)
 {
 	BYTE maybeNumberCounts[MAX_NUMBER] = { 0 };
 	BYTE cellCount = (BYTE)pCells.size();
@@ -390,7 +221,7 @@ bool FXSudoku::CheckCellMaybeNumberOnlyOne(const std::vector<FXCell*> & pCells)
 	return change;
 }
 
-FXCell * FXSudoku::GetBestMaybeNumberCell(BYTE * idxX, BYTE * idxY)
+FXCell * FXSudokuFX::GetBestMaybeNumberCell(BYTE * idxX, BYTE * idxY)
 {
 	FXCell * pBestCell = nullptr;
 
@@ -420,7 +251,7 @@ FXCell * FXSudoku::GetBestMaybeNumberCell(BYTE * idxX, BYTE * idxY)
 	return pBestCell;
 }
 
-bool FXSudoku::RemoveCellMaybeNumbers(const BYTE & idxX, const BYTE & idxY, const BYTE & number)
+bool FXSudokuFX::RemoveCellMaybeNumbers(const BYTE & idxX, const BYTE & idxY, const BYTE & number)
 {
 	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
 	{
@@ -443,7 +274,7 @@ bool FXSudoku::RemoveCellMaybeNumbers(const BYTE & idxX, const BYTE & idxY, cons
 	return false;
 }
 
-bool FXSudoku::GetCellOutNumber(const BYTE & idxX, const BYTE & idxY, std::unordered_set<BYTE> & outNumSet)
+bool FXSudokuFX::GetCellOutNumber(const BYTE & idxX, const BYTE & idxY, std::unordered_set<BYTE> & outNumSet)
 {
 	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
 	{
@@ -461,29 +292,29 @@ bool FXSudoku::GetCellOutNumber(const BYTE & idxX, const BYTE & idxY, std::unord
 	return pGrid->GetOutNumbers(outNumSet);
 }
 
-void FXSudoku::AddTriedCellIndex(const BYTE & idxX, const BYTE & idxY)
+void FXSudokuFX::AddTriedCellIndex(const BYTE & idxX, const BYTE & idxY)
 {
 	m_triedCellIndexes.insert((idxX << 8) | idxY);
 }
 
-bool FXSudoku::IsCellTried(const BYTE & idxX, const BYTE & idxY)
+bool FXSudokuFX::IsCellTried(const BYTE & idxX, const BYTE & idxY)
 {
 	return m_triedCellIndexes.find((idxX << 8) | idxY) != m_triedCellIndexes.cend();
 }
 
-FXSudoku * FXSudoku::Clone()
+FXSudokuFX * FXSudokuFX::Clone()
 {
-	FXSudoku * pSudoku = new FXSudoku();
+	FXSudokuFX * pSudoku = new FXSudokuFX();
 	pSudoku->Sync(this);
 	return pSudoku;
 }
 
-void FXSudoku::Destroy()
+void FXSudokuFX::Destroy()
 {
 	delete this;
 }
 
-bool FXSudoku::Sync(FXSudoku * pSudoku)
+bool FXSudokuFX::Sync(FXSudokuFX * pSudoku)
 {
 	for (BYTE i = 0; i < MAX_GRID_COUNT * MAX_CELL_COUNT; ++i)
 	{

@@ -2,90 +2,61 @@
 //
 
 #include "stdafx.h"
-#include "fx_sudoku.h"
+#include "fx_sudoku_fx.h"
+#include "fx_sudoku_dlx.h"
 #include "fx_dancing_links_x.h"
-#include <fstream>
 
 
 int main(int argc, char * args[])
 {
-
-
-
-
-	return 0;
-
-	FXDancingLinksX dlx(8);
-	dlx.AddRow({ 0, 3, 6 });
-	dlx.AddRow({ 0, 3 });
-	dlx.AddRow({ 3, 4, 6, 7 });
-	dlx.AddRow({ 2, 4, 5 });
-	dlx.AddRow({ 1, 2, 5, 6, 7 });
-	dlx.AddRow({ 1, 6 });
-
-	dlx.Print(std::cout);
-
-	if (dlx.Execute())
-	{
-		std::vector<ULONG> result = dlx.GetTakenRow();
-		std::cout << "result:" << std::endl;
-		for each (ULONG var in result)
-		{
-			std::cout << var << ",";
-		}
-		std::cout << std::endl;
-	}
-	else
-	{
-		std::cout << "no solution!" << std::endl;
-	}
-
-	system("pause");
-	return 0;
-
 	for (BYTE i = 0; i < argc; ++i)
 		std::cout << args[i] << std::endl;
 
-	FXSudoku sudoku(true);
+//	FXSudokuFX sudoku(true);
+	FXSudokuDlx sudoku;
 
-	if (argc > 1)
-	{
-		BYTE row = 0;
-		BYTE col = 0;
-		std::ifstream ifs(args[1]);
-		while (!ifs.eof())
-		{
-			char buff[256];
-			ifs.getline(buff, 256);
-			for (BYTE i = 0; buff[i]; ++i)
-			{
-				if (buff[i] == ' ' || buff[i] == '\t')
-					continue;
-		
-				if (buff[i] >= '0' && buff[i] <= '9')
-				{
-					if (buff[i] != '0')
-						sudoku.SetCellNumber(row, col, buff[i] - 0x30);
-				}
-				else
-				{
-					return -1;
-				}
-			}
 
-			if (++col >= 9)
-			{
-				if (++row >= 9)
-					break;
-				col = 0;
-			}
-		}
-
+// 	if (argc > 1)
+// 	{
+// 		BYTE row = 0;
+// 		BYTE col = 0;
+// 		std::ifstream ifs(args[1]);
+// // 		while (!ifs.eof())
+// // 		{
+// // 			char buff[256];
+// // 			ifs.getline(buff, 256);
+// // 			for (BYTE i = 0; buff[i]; ++i)
+// // 			{
+// // 				if (buff[i] == ' ' || buff[i] == '\t')
+// // 					continue;
+// // 		
+// // 				if (buff[i] >= '0' && buff[i] <= '9')
+// // 				{
+// // 					if (buff[i] != '0')
+// // 						sudoku.SetCellNumber(row, col, buff[i] - 0x30);
+// // 				}
+// // 				else
+// // 				{
+// // 					return -1;
+// // 				}
+// // 			}
+// // 
+// // 			if (++col >= 9)
+// // 			{
+// // 				if (++row >= 9)
+// // 					break;
+// // 				col = 0;
+// // 			}
+// // 		}
+// 
 // 		while (!ifs.eof())
 // 		{
 // 			BYTE col = 0;
 // 			char buff[256];
 // 			ifs.getline(buff, 256);
+// 			if (!strlen(buff))
+// 				continue;
+// 
 // 			for (BYTE i = 0; buff[i]; ++i)
 // 			{
 // 				if (buff[i] == ' ' || buff[i] == '\t')
@@ -108,8 +79,8 @@ int main(int argc, char * args[])
 // 			if (++row >= 9)
 // 				break;
 // 		}
-	}
-	else
+// 	}
+// 	else
 	{
 		sudoku.SetCellNumber(0, 2, 5);
 		sudoku.SetCellNumber(0, 3, 3);
@@ -151,6 +122,36 @@ int main(int argc, char * args[])
 
 	system("pause");
 
-    return 0;
+	return 0;
+
+/******************************************* DLX *******************************************/
+// 	FXDancingLinksX dlx(8);
+// 	dlx.AddRow({ 0, 3, 6 });
+// 	dlx.AddRow({ 0, 3 });
+// 	dlx.AddRow({ 3, 4, 6, 7 });
+// 	dlx.AddRow({ 2, 4, 5 });
+// 	dlx.AddRow({ 1, 2, 5, 6, 7 });
+// 	dlx.AddRow({ 1, 6 });
+// 
+// 	dlx.Print(std::cout);
+// 
+// 	if (dlx.Execute())
+// 	{
+// 		std::vector<ULONG> result = dlx.GetTakenRow();
+// 		std::cout << "result:" << std::endl;
+// 		for each (ULONG var in result)
+// 		{
+// 			std::cout << var << ",";
+// 		}
+// 		std::cout << std::endl;
+// 	}
+// 	else
+// 	{
+// 		std::cout << "no solution!" << std::endl;
+// 	}
+// 
+// 	system("pause");
+// 	return 0;
+/******************************************* DLX *******************************************/
 }
 
