@@ -149,7 +149,6 @@ void FXDancingLinksX::EraseColumn(DLX_Element * ele, std::vector<DLX_Element*> &
 			e->Right->Left = e->Left;
 			eraseElements.push_back(e);
 		}
-		Print();
 	}
 
 	eraseElements.push_back(ele);
@@ -228,13 +227,11 @@ bool FXDancingLinksX::Execute()
 	while ((c = c->Down) != col)
 	{
 		TakenRow(c);
-		Print();
 
 		if (Execute())
 			return true;
 		else
 			BackTracking();
-		Print();
 	}
 
 	return m_head->Left == m_head;

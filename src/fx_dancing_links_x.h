@@ -50,4 +50,4 @@ private:
 //	std::vector<bool**> m_Ans;
 };
 
-#endif // FX_DANCING_LINKS_X_H
+#endif // !FX_DANCING_LINKS_X_H
