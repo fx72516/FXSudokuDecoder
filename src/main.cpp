@@ -3,11 +3,46 @@
 
 #include "stdafx.h"
 #include "fx_sudoku.h"
+#include "fx_dancing_links_x.h"
 #include <fstream>
 
 
 int main(int argc, char * args[])
 {
+
+
+
+
+	return 0;
+
+	FXDancingLinksX dlx(8);
+	dlx.AddRow({ 0, 3, 6 });
+	dlx.AddRow({ 0, 3 });
+	dlx.AddRow({ 3, 4, 6, 7 });
+	dlx.AddRow({ 2, 4, 5 });
+	dlx.AddRow({ 1, 2, 5, 6, 7 });
+	dlx.AddRow({ 1, 6 });
+
+	dlx.Print(std::cout);
+
+	if (dlx.Execute())
+	{
+		std::vector<ULONG> result = dlx.GetTakenRow();
+		std::cout << "result:" << std::endl;
+		for each (ULONG var in result)
+		{
+			std::cout << var << ",";
+		}
+		std::cout << std::endl;
+	}
+	else
+	{
+		std::cout << "no solution!" << std::endl;
+	}
+
+	system("pause");
+	return 0;
+
 	for (BYTE i = 0; i < argc; ++i)
 		std::cout << args[i] << std::endl;
 

@@ -20,6 +20,8 @@ SET (SRC_LIST
 	fx_grid.h
 	fx_sudoku.cpp
 	fx_sudoku.h
+	fx_dancing_links_x.cpp
+	fx_dancing_links_x.h
 	main.cpp
 	stdafx.cpp
 	stdafx.h
