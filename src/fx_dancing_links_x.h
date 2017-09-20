@@ -13,7 +13,7 @@ class FXDancingLinksX
 		ULONG Row;
 		ULONG Col;
 
-		DLX_Element() : Up(this), Down(this), Left(this), Right(this), Row(UNUSEFULL), Col(UNUSEFULL) {}
+		DLX_Element() : Up(this), Down(this), Left(this), Right(this), Row(UNUSEFULL_ULONG), Col(UNUSEFULL_ULONG) {}
 	};
 
 public:
@@ -27,8 +27,11 @@ public:
 
 	void Print();
 	void Print(std::ostream & os);
+
 	bool Execute();
+
 	std::vector<ULONG> GetTakenRow();
+	std::vector<ULONG> GetTakenRowData(const ULONG & rowIdx);
 
 private:
 	void EraseRow(DLX_Element * ele, std::vector<DLX_Element*> & eraseElements);

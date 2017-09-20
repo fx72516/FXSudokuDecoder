@@ -123,7 +123,7 @@ void FXDancingLinksX::AddRow(const std::vector<ULONG>& data)
 
 void FXDancingLinksX::EraseRow(DLX_Element * ele, std::vector<DLX_Element*> & eraseElements)
 {
-	ASSERT(ele->Row != UNUSEFULL);
+	ASSERT(ele->Row != UNUSEFULL_ULONG);
 
 	DLX_Element * e = ele;
 	while ((e = e->Right) != ele)
@@ -139,7 +139,7 @@ void FXDancingLinksX::EraseColumn(DLX_Element * ele, std::vector<DLX_Element*> &
 	DLX_Element * e = ele;
 	while ((e = e->Down) != ele)
 	{
-		if (e->Row != UNUSEFULL)
+		if (e->Row != UNUSEFULL_ULONG)
 		{
 			EraseRow(e, eraseElements);
 		}
@@ -208,7 +208,7 @@ bool FXDancingLinksX::Execute()
 		return true;
 
 	DLX_Element * col = m_head;
-	ULONG colEleCount = UNUSEFULL;
+	ULONG colEleCount = UNUSEFULL_ULONG;
 
 	DLX_Element * c = col->Right;
 	do 
@@ -247,6 +247,24 @@ std::vector<ULONG> FXDancingLinksX::GetTakenRow()
 	}
 
 	return result;
+}
+
+std::vector<ULONG> FXDancingLinksX::GetTakenRowData(const ULONG & rowIdx)
+{
+	std::vector<ULONG> data;
+
+	ASSERT(m_takenRow.size() > rowIdx);
+	if (m_takenRow.size() <= rowIdx)
+		return data;
+
+
+	DLX_Element * row = m_takenRow[rowIdx];
+	do
+	{
+		data.push_back(row->Col);
+	} while ((row = row->Right) != m_takenRow[rowIdx]);
+
+	return data;
 }
 
 void FXDancingLinksX::Print()

@@ -59,12 +59,87 @@ bool FXSudokuDlx::Decode()
 // 	dlx.Print(ofs);
 // 	ofs.close();
 
-	bool result = dlx.Execute();
+	if (!dlx.Execute())
+		return false;
 
-	nums = dlx.GetTakenRow();
-	ASSERT(nums.size() == 81);
+	ASSERT(dlx.GetTakenRow().size() == DLC_COLUMN_COUNT1);
 
-	for ()
+	for (size_t c = 0; c < DLC_COLUMN_COUNT1; ++c)
+	{
+		nums = dlx.GetTakenRowData(c);
 
-	return result;
+#ifdef _DEBUG
+		BYTE row = UNUSEFULL_BYTE;
+		BYTE col = UNUSEFULL_BYTE;
+		BYTE num = UNUSEFULL_BYTE;
+		BYTE grid = UNUSEFULL_BYTE;
+		for (ULONG i = 0; i < nums.size(); ++i)
+		{
+			BYTE _row = UNUSEFULL_BYTE;
+			BYTE _col = UNUSEFULL_BYTE;
+			BYTE _num = UNUSEFULL_BYTE;
+			if (nums[i] < DLC_COLUMN_COUNT1)
+			{
+				_row = (nums[i] % DLC_COLUMN_COUNT1) / (MAX_CELL_COUNT * MAX_GRID_COUNT);
+				_col = (nums[i] % DLC_COLUMN_COUNT1) % (MAX_CELL_COUNT * MAX_GRID_COUNT);
+			}
+			else if (nums[i] < DLC_COLUMN_COUNT2)
+			{
+				_row = ((nums[i] - DLC_COLUMN_COUNT1) % (DLC_COLUMN_COUNT2 - DLC_COLUMN_COUNT1)) / (MAX_CELL_COUNT * MAX_GRID_COUNT);
+				_num = ((nums[i] - DLC_COLUMN_COUNT1) % (DLC_COLUMN_COUNT2 - DLC_COLUMN_COUNT1)) % (MAX_CELL_COUNT * MAX_GRID_COUNT);
+			}
+			else if (nums[i] < DLC_COLUMN_COUNT3)
+			{
+				_col = ((nums[i] - DLC_COLUMN_COUNT2) % (DLC_COLUMN_COUNT3 - DLC_COLUMN_COUNT2)) / (MAX_CELL_COUNT * MAX_GRID_COUNT);
+				_num = ((nums[i] - DLC_COLUMN_COUNT2) % (DLC_COLUMN_COUNT3 - DLC_COLUMN_COUNT2)) % (MAX_CELL_COUNT * MAX_GRID_COUNT);
+			}
+			else
+			{
+				ASSERT(nums[i] < DLC_COLUMN_COUNT);
+				grid = (BYTE)(((nums[i] - DLC_COLUMN_COUNT3)) / (MAX_CELL_COUNT * MAX_GRID_COUNT));
+				_num = (((nums[i] - DLC_COLUMN_COUNT3)) % (MAX_CELL_COUNT * MAX_GRID_COUNT));
+			}
+
+			if (_row != UNUSEFULL_BYTE)
+			{
+				if (row == UNUSEFULL_BYTE)
+					row = _row;
+				else
+					ASSERT(row == _row);
+			}
+
+			if (_col != UNUSEFULL_BYTE)
+			{
+				if (col == UNUSEFULL_BYTE)
+					col = _col;
+				else
+					ASSERT(col == _col);
+			}
+
+			if (_num != UNUSEFULL_BYTE)
+			{
+				if (num == UNUSEFULL_BYTE)
+					num = _num;
+				else
+					ASSERT(num == _num);
+			}
+		}
+		ASSERT(row != UNUSEFULL_BYTE && col != UNUSEFULL_BYTE && num != UNUSEFULL_BYTE && grid != UNUSEFULL_BYTE);
+		ASSERT(grid == (row / MAX_CELL_COUNT) + (col / MAX_CELL_COUNT) * MAX_GRID_COUNT);
+#else
+		std::sort(nums.begin(), nums.end());
+		ASSERT(nums[0] < nums[1] && nums[1] < nums[2] && nums[2] < nums[3]);
+		BYTE row = (nums[0] % DLC_COLUMN_COUNT1) / (MAX_CELL_COUNT * MAX_GRID_COUNT);
+		BYTE col = (nums[0] % DLC_COLUMN_COUNT1) % (MAX_CELL_COUNT * MAX_GRID_COUNT);
+		BYTE num = ((nums[1] - DLC_COLUMN_COUNT1) % (DLC_COLUMN_COUNT2 - DLC_COLUMN_COUNT1)) % (MAX_CELL_COUNT * MAX_GRID_COUNT);;
+#endif // _DEBUG
+
+		if (!GetCellNumber(row, col))
+			SetCellNumber(row, col, num + 1);
+		else
+			ASSERT((row = GetCellNumber(row, col)) == num + 1);
+	}
+
+	ASSERT(IsFinished());
+	return IsFinished();
 }

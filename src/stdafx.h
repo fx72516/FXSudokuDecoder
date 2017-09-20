@@ -15,6 +15,7 @@
 #include <vector>
 #include <stack>
 #include <fstream>
+#include <algorithm>
 
 
 
@@ -31,11 +32,12 @@
 
 typedef unsigned char BYTE;
 typedef unsigned long ULONG;
-const static ULONG UNUSEFULL = 0xffffffff;
+const static BYTE	UNUSEFULL_BYTE	= 0xff;
+const static ULONG	UNUSEFULL_ULONG	= 0xffffffff;
 
-const static BYTE MAX_CELL_COUNT = 3;
-const static BYTE MAX_GRID_COUNT = MAX_CELL_COUNT;
-const static BYTE MAX_NUMBER = MAX_CELL_COUNT * MAX_GRID_COUNT;
+const static BYTE MAX_CELL_COUNT	= 3;
+const static BYTE MAX_GRID_COUNT	= MAX_CELL_COUNT;
+const static BYTE MAX_NUMBER		= MAX_CELL_COUNT * MAX_GRID_COUNT;
 
 // TODO ...
 #define GET_CELL_AND_CHECK_CONTINUE(idxX, idxY, pCell)	\
